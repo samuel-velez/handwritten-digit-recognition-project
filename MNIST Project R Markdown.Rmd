@@ -3,8 +3,9 @@ title: "MNIST using Random Trees"
 author: "Samuel Velez Arango"
 date: "05/05/2019"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -14,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Introduction
 
 The MNIST ( Modified National Institute of Standards and Technology) database is a compilation of handwritten numbers. Each of the components in the data set include a matrix with features in the columns, which we will use to train a couple models to find which one performs best recognizing the handwritten numbers.
-Each entry is composed of 784 features, which represent each pixel in a 78x78 image, and their values depend on the "intensity" of the pixel, ranging between 0 to 255, 0 being white and 255 black.
+Each entry is composed of 784 features, which represent each pixel in a 28x28 image, and their values depend on the "intensity" of the pixel, ranging between 0 to 255, 0 being white and 255 black.
 
 The library is free to access through the dslabs package:
 
@@ -23,7 +24,7 @@ library(dslabs)
 mnist <- read_mnist()
 ```
 
-Because this default data set contains so many entries (more than my computer can handle), I will reduce it by taking 50.000 random samples to train our model and 10.000 to test it.
+Of the original data set, 50.000 random samples will be extracted to train our model and 10.000 to test it.
 
 ```{r preparation1}
 set.seed(1)
@@ -89,10 +90,11 @@ length(col_ind_x)
 The models that will be tested are k-Nearest Neighbors and Random Forest, as they are both relatively simple to fit, yet provide the necessary flexibility.
 
 # k-Nearest Neighbors
-kNN models work by using the "k" nearest data points to the observed one to estimate its conditional probability. The advantage of applying k Nearest Neighbors is how responsive it is to local structures.
-The goal with kNN models is to optimize k to achieve maximum accuracy.
+kNN models work by using the "k" nearest data points to the observed one to estimate its conditional probability. The advantage of applying k Nearest Neighbors is how responsive it is to local structures, as it is approximated based on a small "neighborhood" of data points. Its disadvantage is how sensitive it is to outliers, and that it doesn't develop a discriminative function, instead only memorizing the data set, making imbalanced data sets problematic, but this is not the case this time, as our data is fairly homogenous.
 
-The following code will find the k that provides the best accuracy, and we also employ the k-fold cross validation method with the trainControl function, which will fold our data in 10, and use 10% of each to test itself.
+kNN models require only one hyperparameter to be optimized, k, and it will be chosen in terms of the overall accuracy it provides.
+
+The following code will find the k that provides the best accuracy, and we also employ the fold cross validation method with the trainControl function, which will fold our data in 10, and use 10% of each to test itself.
 
 ```{r creating control set knn}
 control_set <- trainControl(method = "cv", number = 10, p = .9)
@@ -247,4 +249,4 @@ confusionmatrix$byClass[,1:2]
 
 Doing this pushes the accuracy into 95.6%, indeed improving our result over the previous ones. 
 
-While we attained a relatively high accuracy, the current best approaches hover around 97%, though they use much more advanced methods. Our most erroneous guess were the 5 and 8 digits through all approaches, improving their accuracy will be an interesting challenge.
+While we attained a relatively high accuracy, the current best approach holds an accuracy of 99.7% (Regularization of Neural Networks using DropConnect (ICML 2013)), though they use much more advanced methods. Our most erroneous guess were the 5 and 8 digits through all approaches, improving their accuracy will be an interesting challenge.
